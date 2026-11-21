@@ -45,14 +45,14 @@ jobs:
     permissions:
       contents: write
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v7
-
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
           path: artifacts
+
+    steps:
+      - name: List artifacts
+        run: ls -R artifacts
 
       - name: Create release
         uses: softprops/action-gh-release@v3

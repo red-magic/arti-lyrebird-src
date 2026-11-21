@@ -28,16 +28,13 @@ jobs:
     steps:
       - name: Download source archives
         run: |
-          mkdir out
-          cd out
           curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
 
       - name: Upload source archives
         uses: actions/upload-artifact@v7
         with:
-          name: sources
-          path: out/*.tar.gz
+          path: *.tar.gz
 
   release:
     runs-on: ubuntu-26.04

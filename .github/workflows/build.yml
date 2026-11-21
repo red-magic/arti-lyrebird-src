@@ -1,0 +1,60 @@
+name: Release Arti and Lyrebird source archives
+
+on:
+  push:
+    tags:
+      - 'arti-[0-9]+\.[0-9]+\.[0-9]+-lyrebird-[0-9]+\.[0-9]+\.[0-9]+'
+
+jobs:
+  extract-versions:
+    runs-on: ubuntu-26.04
+    outputs:
+      arti_ver: ${{ steps.extract.outputs.arti_ver }}
+      lyrebird_ver: ${{ steps.extract.outputs.lyrebird_ver }}
+
+    steps:
+      - name: Extract versions
+        id: extract
+        run: |
+          arti_ver=$(echo '${{ github.ref_name }}' | cut -d "-" -f 2)
+          lyrebird_ver=$(echo '${{ github.ref_name }}' | cut -d "-" -f 4)
+          echo "arti_ver=$arti_ver" >> "$GITHUB_OUTPUT"
+          echo "lyrebird_ver=$lyrebird_ver" >> "$GITHUB_OUTPUT"
+
+  sources:
+    name: sources
+    runs-on: ubuntu-26.04
+    needs: extract-versions
+    steps:
+      - name: Download source archives
+        run: |
+          mkdir out
+          cd out
+          curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+          curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+
+      - name: Upload source archives
+        uses: actions/upload-artifact@v7
+        with:
+          name: sources
+          path: out/*.tar.gz
+
+  release:
+    runs-on: ubuntu-26.04
+    needs: [extract-versions, sources]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: Arti ${{ needs.extract-versions.outputs.arti_ver }} + Lyrebird ${{ needs.extract-versions.outputs.lyrebird_ver }}
+          files: |
+            artifacts/sources/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+            artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz

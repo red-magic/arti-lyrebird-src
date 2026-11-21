@@ -28,13 +28,16 @@ jobs:
     steps:
       - name: Download source archives
         run: |
+          mkdir out
+          cd out
           curl -fLO https://gitlab.torproject.org/tpo/core/arti/-/archive/arti-v${{ needs.extract-versions.outputs.arti_ver }}/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
           curl -fLO https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird/-/archive/${{ needs.extract-versions.outputs.lyrebird_ver }}/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
 
       - name: Upload source archives
         uses: actions/upload-artifact@v7
         with:
-          path: *.tar.gz
+          name: sources
+          path: out/*.tar.gz
 
   release:
     runs-on: ubuntu-26.04
@@ -46,6 +49,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
+          name: sources
           path: artifacts
 
       - name: Create release
@@ -53,5 +57,5 @@ jobs:
         with:
           name: Arti ${{ needs.extract-versions.outputs.arti_ver }} + Lyrebird ${{ needs.extract-versions.outputs.lyrebird_ver }}
           files: |
-            artifacts/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
-            artifacts/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+            artifacts/sources/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+            artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz

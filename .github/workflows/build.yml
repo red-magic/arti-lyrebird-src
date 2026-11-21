@@ -51,13 +51,10 @@ jobs:
         with:
           path: artifacts
 
-      - name: List artifacts
-        run: ls -R artifacts
-
       - name: Create release
         uses: softprops/action-gh-release@v3
         with:
           name: Arti ${{ needs.extract-versions.outputs.arti_ver }} + Lyrebird ${{ needs.extract-versions.outputs.lyrebird_ver }}
           files: |
-            artifacts/sources/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
-            artifacts/sources/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz
+            artifacts/arti-arti-v${{ needs.extract-versions.outputs.arti_ver }}.tar.gz
+            artifacts/lyrebird-${{ needs.extract-versions.outputs.lyrebird_ver }}.tar.gz

@@ -3,7 +3,7 @@ name: Release Arti and Lyrebird source archives
 on:
   push:
     tags:
-      - 'arti-[0-9]+\.[0-9]+\.[0-9]+-lyrebird-[0-9]+\.[0-9]+\.[0-9]+'
+      - 'arti-[0-9]*.[0-9]*.[0-9]*-lyrebird-[0-9]*.[0-9]*.[0-9]*'
 
 jobs:
   extract-versions:
